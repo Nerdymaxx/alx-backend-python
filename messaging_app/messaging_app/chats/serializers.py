@@ -1,23 +1,22 @@
-from rest_framework import serializers;
-from django.contrib.auth.models import Group, User
-from .models import User, Conversation , Message
-
+from rest_framework import serializers
+from .models import User, Conversation, Message
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'first_name',  'last_name', 'email', 'phone_number', 'role','timestamp']
-
+        fields = '__all__'
 
 class MessageSerializer(serializers.ModelSerializer):
+    sender = UserSerializer(read_only=True)
+
     class Meta:
         model = Message
-        fields = ['message_id', 'sender', 'message_body', 'timestamp']
-
+        fields = ['message_id', 'sender', 'conversation', 'message_body', 'sent_at']
 
 class ConversationSerializer(serializers.ModelSerializer):
-    participants =UserSerializer(many=True, read_only = True)
-    messages= MessageSerializer(many =True, read_only= True)
+    participants = UserSerializer(many=True, read_only=True)
+    messages = MessageSerializer(many=True, read_only=True)
+
     class Meta:
         model = Conversation
-        fields = ['conversation_id', 'participants', 'timestamp']
+        fields = ['conversation_id', 'participants', 'messages', 'created_at']
